@@ -280,4 +280,5 @@ import click
 @click.option("--share", is_flag=True, default=False, help="Enable sharing of the interface.")
 def main(debug, share):
   demo.queue().launch(debug=debug, share=share)
-
+if __name__ == "__main__":
+    main()
