@@ -48,3 +48,14 @@ download_model(
 whisper_tiny_path = f"{model_folder}/audio_processor/tiny.pt"
 whisper_tiny_url = "https://openaipublic.azureedge.net/main/whisper/models/65147644a518d12f04e32d6f3b26facc3f8dd46e5390956a9424a650c0ce22b9/tiny.pt"
 download_file(whisper_tiny_url, whisper_tiny_path)
+
+
+ffmpeg_path = f"{base_path}/ffmpeg-4.4-amd64-static.tar.xz"
+ffmpeg_url = "https://www.johnvansickle.com/ffmpeg/old-releases/ffmpeg-4.4-amd64-static.tar.xz"
+download_file(ffmpeg_url, ffmpeg_path)
+
+import tarfile
+with tarfile.open(ffmpeg_path, "r:xz") as tar:
+    tar.extractall(f"{base_path}/")
+if os.path.exists(f"{base_path}/ffmpeg-4.4-amd64-static"):
+  os.rename(f"{base_path}/ffmpeg-4.4-amd64-static",f"{base_path}/echomimic_v2/ffmpeg")
