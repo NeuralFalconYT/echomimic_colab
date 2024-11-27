@@ -1,3 +1,7 @@
+## echomimic_v2
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/NeuralFalconYT/echomimic_colab/blob/main/echomimic_v2.ipynb) <br>
+Uncomment and adjust if using Google Colab or a specific path
+``` # base_path = "/content"  ```
 ## Credit: 
 
 [echomimic_v2 GitHub](https://github.com/antgroup/echomimic_v2)
