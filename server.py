@@ -1,4 +1,4 @@
-import the
+import os
 import random
 from pathlib import Path
 import numpy as np
@@ -20,11 +20,11 @@ from torchao.quantization import quantize_, int8_weight_only
 import gc
 
 total_vram_in_gb = torch.cuda.get_device_properties(0).total_memory / 1073741824
-print(f'\033[32mCUDA version: {torch.version.cuda}\033[0m')
-print(f'\033[32mPytorch version: {torch.__version__}\033[0m')
-print(f'\033[32m graphics card model: {torch.cuda.get_device_name()}\033[0m')
-print(f'\033[32m video memory size: {total_vram_in_gb:.2f}GB\033[0m')
-print(f'\033[32m precision: float16\033[0m')
+print(f'\033[32m CUDA version：{torch.version.cuda}\033[0m')
+print(f'\033[32m Pytorch version：{torch.__version__}\033[0m')
+print(f'\033[32m graphics card model：{torch.cuda.get_device_name()}\033[0m')
+print(f'\033[32m video memory size：{total_vram_in_gb:.2f}GB\033[0m')
+print(f'\033[32m precision：float16\033[0m')
 dtype = torch.float16
 if torch.cuda.is_available():
         device = "cuda"
@@ -49,7 +49,7 @@ def generate(image_input, audio_input, pose_input, width, height, length, steps,
     save_dir.mkdir(exist_ok=True, parents=True)
 
     ############# model_init started #############
-    ## Alas, he enters
+    ## vae init
     vae = AutoencoderKL.from_pretrained("./pretrained_weights/sd-vae-ft-mse").to(device, dtype=dtype)
     if quantization_input:
         quantize_(vae, int8_weight_only())
@@ -70,7 +70,7 @@ def generate(image_input, audio_input, pose_input, width, height, length, steps,
     denoising_unet = EMOUNet3DConditionModel.from_pretrained_2d(
         "./pretrained_weights/sd-image-variations-diffusers",
         "./pretrained_weights/motion_module.pth",
-        subfolder="dreams",
+        subfolder="unet",
         unet_additional_kwargs = {
             "use_inflated_groupnorm": True,
             "unet_use_cross_frame_attention": False,
@@ -122,7 +122,7 @@ def generate(image_input, audio_input, pose_input, width, height, length, steps,
     scheduler = DDIMScheduler(**sched_kwargs)
 
     pipe = EchoMimicV2Pipeline(
-        feet = feet,
+        vae=vae,
         reference_unet=reference_unet,
         denoising_unet=denoising_unet,
         audio_guider=audio_processor,
@@ -229,12 +229,12 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                 with gr.Group():
                     image_input = gr.Image(label="Image input (auto-scaling)", type="filepath")
                     audio_input = gr.Audio(label="Audio input", type="filepath")
-                    pose_input = gr.Textbox(label="pose input (directory address)", placeholder="Please enter the directory address of pose data", value="assets/halfbody_demo/pose/01")
+                    pose_input = gr.Textbox(label="pose input (directory address)", placeholder="请输入姿态数据的目录地址", value="assets/halfbody_demo/pose/01")
                 with gr.Group():
                     with gr.Row():
                         width = gr.Number(label="Width (multiple of 16, 768 is recommended)", value=768)
                         height = gr.Number(label="Height (multiple of 16, 768 is recommended)", value=768)
-                        length = gr.Number(label="Video length, recommended 240)", value=240)
+                        length = gr.Number(label="Video length (recommended 240)", value=240)
                     with gr.Row():
                         steps = gr.Number(label="Steps (30 recommended)", value=20)
                         sample_rate = gr.Number(label="Sampling rate (recommended 16000)", value=16000)
@@ -272,7 +272,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
   
 # if __name__ == "__main__":
-# demo.queue()
+#     demo.queue()
 #     demo.launch(inbrowser=True)
 import click
 @click.command()
@@ -280,5 +280,6 @@ import click
 @click.option("--share", is_flag=True, default=False, help="Enable sharing of the interface.")
 def main(debug, share):
   demo.queue().launch(debug=debug, share=share)
+
 if __name__ == "__main__":
     main()
