@@ -1,4 +1,4 @@
-import os
+import the
 import random
 from pathlib import Path
 import numpy as np
@@ -20,11 +20,11 @@ from torchao.quantization import quantize_, int8_weight_only
 import gc
 
 total_vram_in_gb = torch.cuda.get_device_properties(0).total_memory / 1073741824
-print(f'\033[32mCUDA版本：{torch.version.cuda}\033[0m')
-print(f'\033[32mPytorch版本：{torch.__version__}\033[0m')
-print(f'\033[32m显卡型号：{torch.cuda.get_device_name()}\033[0m')
-print(f'\033[32m显存大小：{total_vram_in_gb:.2f}GB\033[0m')
-print(f'\033[32m精度：float16\033[0m')
+print(f'\033[32mCUDA version: {torch.version.cuda}\033[0m')
+print(f'\033[32mPytorch version: {torch.__version__}\033[0m')
+print(f'\033[32m graphics card model: {torch.cuda.get_device_name()}\033[0m')
+print(f'\033[32m video memory size: {total_vram_in_gb:.2f}GB\033[0m')
+print(f'\033[32m precision: float16\033[0m')
 dtype = torch.float16
 if torch.cuda.is_available():
         device = "cuda"
@@ -49,11 +49,11 @@ def generate(image_input, audio_input, pose_input, width, height, length, steps,
     save_dir.mkdir(exist_ok=True, parents=True)
 
     ############# model_init started #############
-    ## vae init
+    ## Alas, he enters
     vae = AutoencoderKL.from_pretrained("./pretrained_weights/sd-vae-ft-mse").to(device, dtype=dtype)
     if quantization_input:
         quantize_(vae, int8_weight_only())
-        print("使用int8量化")
+        print("Use int8 quantization")
 
     ## reference net init
     reference_unet = UNet2DConditionModel.from_pretrained("./pretrained_weights/sd-image-variations-diffusers", subfolder="unet", use_safetensors=False).to(dtype=dtype, device=device)
@@ -70,7 +70,7 @@ def generate(image_input, audio_input, pose_input, width, height, length, steps,
     denoising_unet = EMOUNet3DConditionModel.from_pretrained_2d(
         "./pretrained_weights/sd-image-variations-diffusers",
         "./pretrained_weights/motion_module.pth",
-        subfolder="unet",
+        subfolder="dreams",
         unet_additional_kwargs = {
             "use_inflated_groupnorm": True,
             "unet_use_cross_frame_attention": False,
@@ -122,7 +122,7 @@ def generate(image_input, audio_input, pose_input, width, height, length, steps,
     scheduler = DDIMScheduler(**sched_kwargs)
 
     pipe = EchoMimicV2Pipeline(
-        vae=vae,
+        feet = feet,
         reference_unet=reference_unet,
         denoising_unet=denoising_unet,
         audio_guider=audio_processor,
@@ -219,7 +219,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                 <a href="https://arxiv.org/abs/2411.10061">📜 arXiv </a>
             </div>
             <div style="text-align: center; font-weight: bold; color: red;">
-                ⚠️ 该演示仅供学术研究和体验使用。
+                ⚠️ This demo is for academic research and experience only.
             </div>
             
             """)
@@ -227,29 +227,29 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
         with gr.Row():
             with gr.Column():
                 with gr.Group():
-                    image_input = gr.Image(label="图像输入（自动缩放）", type="filepath")
-                    audio_input = gr.Audio(label="音频输入", type="filepath")
-                    pose_input = gr.Textbox(label="姿态输入（目录地址）", placeholder="请输入姿态数据的目录地址", value="assets/halfbody_demo/pose/01")
+                    image_input = gr.Image(label="Image input (auto-scaling)", type="filepath")
+                    audio_input = gr.Audio(label="Audio input", type="filepath")
+                    pose_input = gr.Textbox(label="pose input (directory address)", placeholder="Please enter the directory address of pose data", value="assets/halfbody_demo/pose/01")
                 with gr.Group():
                     with gr.Row():
-                        width = gr.Number(label="宽度（16的倍数，推荐768）", value=768)
-                        height = gr.Number(label="高度（16的倍数，推荐768）", value=768)
-                        length = gr.Number(label="视频长度，推荐240）", value=240)
+                        width = gr.Number(label="Width (multiple of 16, 768 is recommended)", value=768)
+                        height = gr.Number(label="Height (multiple of 16, 768 is recommended)", value=768)
+                        length = gr.Number(label="Video length, recommended 240)", value=240)
                     with gr.Row():
-                        steps = gr.Number(label="步骤（推荐30）", value=20)
-                        sample_rate = gr.Number(label="采样率（推荐16000）", value=16000)
-                        cfg = gr.Number(label="cfg（推荐2.5）", value=2.5, step=0.1)
+                        steps = gr.Number(label="Steps (30 recommended)", value=20)
+                        sample_rate = gr.Number(label="Sampling rate (recommended 16000)", value=16000)
+                        cfg = gr.Number(label="cfg (recommended 2.5)", value=2.5, step=0.1)
                     with gr.Row():
-                        fps = gr.Number(label="帧率（推荐24）", value=24)
-                        context_frames = gr.Number(label="上下文框架（推荐12）", value=12)
-                        context_overlap = gr.Number(label="上下文重叠（推荐3）", value=3)
+                        fps = gr.Number(label="Frame rate (recommended 24)", value=24)
+                        context_frames = gr.Number(label="Context frame (recommended 12)", value=12)
+                        context_overlap = gr.Number(label="Context overlap (recommended 3)", value=3)
                     with gr.Row():
-                        quantization_input = gr.Checkbox(label="int8量化（推荐显存12G的用户开启，并使用不超过5秒的音频）", value=False)
-                        seed = gr.Number(label="种子(-1为随机)", value=-1)
-                generate_button = gr.Button("🎬 生成视频")
+                        quantization_input = gr.Checkbox(label="int8 quantization (recommended for users with 12G video memory, and use audio no longer than 5 seconds)", value=False)
+                        seed = gr.Number(label="seed (-1 is random)", value=-1)
+                generate_button = gr.Button("🎬 Generate Video")
             with gr.Column():
-                video_output = gr.Video(label="输出视频")
-                seed_text = gr.Textbox(label="种子", interactive=False, visible=False)
+                video_output = gr.Video(label="Output video")
+                seed_text = gr.Textbox(label="Seed", interactive=False, visible=False)
         gr.Examples(
             examples=[
                 ["EMTD_dataset/ref_imgs_by_FLUX/man/0001.png", "assets/halfbody_demo/audio/chinese/echomimicv2_man.wav"],
@@ -261,7 +261,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
                 ["EMTD_dataset/ref_imgs_by_FLUX/woman/0057.png", "assets/halfbody_demo/audio/chinese/ultraman.wav"]
             ],
             inputs=[image_input, audio_input],  
-            label="预设人物及音频",
+            label="Default characters and audio",
         )
 
     generate_button.click(
@@ -272,7 +272,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
 
   
 # if __name__ == "__main__":
-#     demo.queue()
+# demo.queue()
 #     demo.launch(inbrowser=True)
 import click
 @click.command()
