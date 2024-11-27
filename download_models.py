@@ -58,4 +58,4 @@ import tarfile
 with tarfile.open(ffmpeg_path, "r:xz") as tar:
     tar.extractall(f"{base_path}/")
 if os.path.exists(f"{base_path}/ffmpeg-4.4-amd64-static"):
-  os.rename(f"{base_path}/ffmpeg-4.4-amd64-static",f"{base_path}/echomimic_v2/ffmpeg")
+  os.rename(f"{base_path}/ffmpeg-4.4-amd64-static",f"{base_path}/ffmpeg")
